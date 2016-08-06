@@ -3,6 +3,7 @@
 
 _apt_key: [
   { state: "present", keyserver: "keyserver.ubuntu.com", id: "0xF1656F24C74CD1D8" },
+  { state: "present", keyserver: "keyserver.ubuntu.com", id: "CBCB082A1BB943DB" },
 ]
 _apt_repository: [
   { state: "present", repo: "deb [arch=amd64,i386,ppc64el] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main" },
