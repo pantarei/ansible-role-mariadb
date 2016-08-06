@@ -1,0 +1,77 @@
+---
+# tasks file for hswong3i.mariadb
+
+- name: include release specific variables
+  include_vars: "{{ ansible_distribution_release }}.yml"
+  tags: hswong3i.mariadb
+
+- name: apt-key add
+  apt_key:
+    keyserver: "{{ item.keyserver }}"
+    id: "{{ item.id }}"
+    state: "{{ item.state }}"
+  with_items: "{{ _apt_key }}"
+  notify: restart mariadb
+  tags: hswong3i.mariadb
+
+- name: apt-add-repository
+  apt_repository:
+    repo: "{{ item.repo }}"
+    state: "{{ item.state }}"
+  with_items: "{{ _apt_repository }}"
+  tags: hswong3i.mariadb
+
+- name: apt-get install
+  apt:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+  with_items: "{{ _apt }}"
+  notify: restart mariadb
+  tags: hswong3i.mariadb
+
+- name: disable mariadb anonymous access
+  shell: |
+    sudo -i mysql -NBe "DELETE FROM mysql.user WHERE User = ''"
+  register: disable_anonymous_access_result
+  changed_when: disable_anonymous_access_result.rc != 0
+  notify: restart mariadb
+  tags: hswong3i.mariadb
+
+- name: disable mariadb root access from remote
+  shell: |
+    sudo -i mysql -NBe "DELETE FROM mysql.user WHERE User = '{{ mysql_root_user }}' AND Host <> 'localhost'"
+  register: disable_root_access_remote_result
+  changed_when: disable_root_access_remote_result.rc != 0
+  notify: restart mariadb
+  tags: hswong3i.mariadb
+
+- name: setup mariadb root password
+  shell: |
+    sudo -i mysql -NBe "SET PASSWORD FOR '{{ mysql_root_user }}'@'localhost' = PASSWORD('{{ mysql_root_pass }}')"
+  when: mysql_root_pass is string
+  register: setup_root_password_result
+  changed_when: setup_root_password_result.rc != 0
+  notify: restart mariadb
+  tags: hswong3i.mariadb
+
+- name: copy templates
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { src: "etc/mysql/conf.d/mariadb.cnf.j2", dest: "/etc/mysql/conf.d/mariadb.cnf",  owner: "root", group: "root", mode: "0644" }
+    - { src: "etc/mysql/conf.d/mysqld_safe_syslog.cnf.j2", dest: "/etc/mysql/conf.d/mysqld_safe_syslog.cnf",  owner: "root", group: "root", mode: "0644" }
+    - { src: "etc/mysql/my.cnf.j2", dest: "/etc/mysql/my.cnf",  owner: "root", group: "root", mode: "0644" }
+    - { src: "root/.my.cnf.j2", dest: "/root/.my.cnf",  owner: "root", group: "root", mode: "0600" }
+  notify: restart mariadb
+  tags: hswong3i.mariadb
+
+- name: enable service
+  service:
+    name: "mysql"
+    enabled: "yes"
+  notify: restart mariadb
+  tags: hswong3i.mariadb

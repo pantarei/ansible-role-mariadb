@@ -1,0 +1,7 @@
+---
+# handlers file for hswong3i.mariadb
+
+- name: restart mariadb
+  service:
+    name: "mysql"
+    state: "restarted"
