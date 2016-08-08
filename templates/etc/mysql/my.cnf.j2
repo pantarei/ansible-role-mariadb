@@ -124,7 +124,7 @@ innodb_locks_unsafe_for_binlog = {{ mysql_innodb_locks_unsafe_for_binlog }}
 wsrep_on = ON
 wsrep_provider = /usr/lib/galera/libgalera_smm.so
 wsrep_cluster_address = "gcomm://
-{%- for host in groups['mariadb'] -%}
+{%- for host in play_hosts -%}
 {{ hostvars[host].ansible_default_ipv4.address }}
 {%- if not loop.last -%},{%- endif -%}
 {%- endfor -%}"
