@@ -121,20 +121,24 @@ innodb_locks_unsafe_for_binlog = {{ mysql_innodb_locks_unsafe_for_binlog }}
 #
 [galera]
 # Mandatory settings
-#wsrep_on=ON
-#wsrep_provider=
-#wsrep_cluster_address=
-#binlog_format=row
-#default_storage_engine=InnoDB
-#innodb_autoinc_lock_mode=2
+wsrep_on = ON
+wsrep_provider = /usr/lib/galera/libgalera_smm.so
+wsrep_cluster_address = "gcomm://
+{%- for host in groups['mariadb'] -%}
+{{ hostvars[host].ansible_default_ipv4.address }}
+{%- if not loop.last -%},{%- endif -%}
+{%- endfor -%}"
+binlog_format = row
+default_storage_engine = InnoDB
+innodb_autoinc_lock_mode = {{ mysql_innodb_autoinc_lock_mode }}
 #
 # Allow server to accept connections on all interfaces.
 #
-#bind-address=0.0.0.0
+bind-address = {{ mysql_bind_address }}
 #
 # Optional setting
 #wsrep_slave_threads=1
-#innodb_flush_log_at_trx_commit=0
+innodb_flush_log_at_trx_commit = {{ mysql_innodb_flush_log_at_trx_commit }}
 
 [mysqldump]
 quick
