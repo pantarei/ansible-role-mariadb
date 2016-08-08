@@ -72,7 +72,7 @@
 - name: bootstrap a new cluster
   shell: |
     service mysql stop && service mysql bootstrap
-  when: inventory_hostname == groups['mariadb'][0]
+  when: inventory_hostname == play_hosts[0]
   register: bootstrap_cluster_result
   changed_when: bootstrap_cluster_result.rc != 0
   tags: hswong3i.mariadb
@@ -80,7 +80,7 @@
 - name: adding another node to a cluster
   shell: |
     service mysql stop && service mysql start
-  when: inventory_hostname != groups['mariadb'][0]
+  when: inventory_hostname != play_hosts[0]
   register: add_node_result
   changed_when: add_node_result.rc != 0
   tags: hswong3i.mariadb
