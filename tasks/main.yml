@@ -11,7 +11,6 @@
     id: "{{ item.id }}"
     state: "{{ item.state }}"
   with_items: "{{ _apt_key }}"
-  notify: restart mariadb
   tags: hswong3i.mariadb
 
 - name: apt-add-repository
