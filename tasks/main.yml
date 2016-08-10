@@ -76,7 +76,7 @@
     - { src: "root/.my.cnf.j2", dest: "/root/.my.cnf",  owner: "root", group: "root", mode: "0600" }
   tags: hswong3i.mariadb
 
-- name: stop and disable service start on boot
+- name: disable service start on boot
   service:
     name: "mysql"
     enabled: "no"
