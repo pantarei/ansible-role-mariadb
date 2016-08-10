@@ -11,7 +11,6 @@
     id: "{{ item.id }}"
     state: "{{ item.state }}"
   with_items: "{{ _apt_key }}"
-  notify: restart mariadb
   tags: hswong3i.mariadb
 
 - name: apt-add-repository
@@ -26,7 +25,6 @@
     name: "{{ item.name }}"
     state: "{{ item.state }}"
   with_items: "{{ _apt }}"
-  notify: restart mariadb
   tags: hswong3i.mariadb
 
 - name: disable mariadb anonymous access
@@ -34,24 +32,30 @@
     sudo -i mysql -NBe "DELETE FROM mysql.user WHERE User = ''"
   register: disable_anonymous_access_result
   changed_when: disable_anonymous_access_result.rc != 0
-  notify: restart mariadb
+  ignore_errors: yes
   tags: hswong3i.mariadb
 
 - name: disable mariadb root access from remote
   shell: |
-    sudo -i mysql -NBe "DELETE FROM mysql.user WHERE User = '{{ mysql_root_user }}' AND Host <> 'localhost'"
+    sudo -i mysql -NBe "DELETE FROM mysql.user WHERE User = '{{ item }}' AND Host <> 'localhost'"
+  with_items:
+    - "{{ mysql_root_user }}"
+    - "debian-sys-maint"
   register: disable_root_access_remote_result
   changed_when: disable_root_access_remote_result.rc != 0
-  notify: restart mariadb
+  ignore_errors: yes
   tags: hswong3i.mariadb
 
 - name: setup mariadb root password
   shell: |
-    sudo -i mysql -NBe "SET PASSWORD FOR '{{ mysql_root_user }}'@'localhost' = PASSWORD('{{ mysql_root_pass }}')"
+    sudo -i mysql -NBe "SET PASSWORD FOR '{{ item }}'@'localhost' = PASSWORD('{{ mysql_root_pass }}')"
+  with_items:
+    - "{{ mysql_root_user }}"
+    - "debian-sys-maint"
   when: mysql_root_pass is string
   register: setup_root_password_result
   changed_when: setup_root_password_result.rc != 0
-  notify: restart mariadb
+  ignore_errors: yes
   tags: hswong3i.mariadb
 
 - name: copy templates
@@ -64,14 +68,38 @@
   with_items:
     - { src: "etc/mysql/conf.d/mariadb.cnf.j2", dest: "/etc/mysql/conf.d/mariadb.cnf",  owner: "root", group: "root", mode: "0644" }
     - { src: "etc/mysql/conf.d/mysqld_safe_syslog.cnf.j2", dest: "/etc/mysql/conf.d/mysqld_safe_syslog.cnf",  owner: "root", group: "root", mode: "0644" }
+    - { src: "etc/mysql/debian.cnf.j2", dest: "/etc/mysql/debian.cnf",  owner: "root", group: "root", mode: "0600" }
     - { src: "etc/mysql/my.cnf.j2", dest: "/etc/mysql/my.cnf",  owner: "root", group: "root", mode: "0644" }
     - { src: "root/.my.cnf.j2", dest: "/root/.my.cnf",  owner: "root", group: "root", mode: "0600" }
-  notify: restart mariadb
   tags: hswong3i.mariadb
 
-- name: enable service
+- name: stop and disable service start on boot
   service:
     name: "mysql"
-    enabled: "yes"
-  notify: restart mariadb
+    enabled: "no"
+    state: "stopped"
+  tags: hswong3i.mariadb
+
+- name: cleanup cluster for restart
+  shell: |
+    killall -9 mysqld
+    rm -rf /var/lib/mysql/ib*
+  register: cleanup_cluster_result
+  changed_when: cleanup_cluster_result.rc != 0
+  ignore_errors: yes
+  tags: hswong3i.mariadb
+
+- name: bootstrap a new cluster
+  service:
+    name: "mysql"
+    state: "started"
+    arguments: "--wsrep-new-cluster"
+  when: inventory_hostname == play_hosts[0]
+  tags: hswong3i.mariadb
+
+- name: adding another node to a cluster
+  service:
+    name: "mysql"
+    state: "started"
+  when: inventory_hostname != play_hosts[0]
   tags: hswong3i.mariadb
