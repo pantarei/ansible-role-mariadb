@@ -47,7 +47,7 @@ To start (a.k.a. bootstrap) and new cluster, create a playbook as below (note th
             done
           when: inventory_hostname == play_hosts[0]
 
-        - name: readd master node to the cluster
+        - name: re-add master node to the cluster
           service:
             name: "mysql"
             state: "started"
