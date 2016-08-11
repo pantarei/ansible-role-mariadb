@@ -23,23 +23,13 @@ To start (a.k.a. bootstrap) and new cluster, create a playbook as below (note th
     - hosts: mariadb
       remote_user: root
       tasks:
-        - name: stop all slave nodes
-          service:
-            name: "mysql"
-            state: "stopped"
-          when: inventory_hostname != play_hosts[0]
-        
-        - name: stop master nodes
-          service:
-            name: "mysql"
-            state: "stopped"
-          when: inventory_hostname == play_hosts[0]
-
-        - name: bootstrap a new cluster
-          service:
-            name: "mysql"
-            state: "started"
-            arguments: "--wsrep-new-cluster"
+        - name: bootstrap a new cluster with mysqld_safe
+          shell: |
+            mysqld_safe --wsrep-new-cluster > /dev/null 2>&1 &
+            for i in $(seq 1 60); do
+              sleep 1
+              pgrep mysqld && break;
+            done
           when: inventory_hostname == play_hosts[0]
 
         - name: add slave nodes to the cluster
@@ -47,6 +37,21 @@ To start (a.k.a. bootstrap) and new cluster, create a playbook as below (note th
             name: "mysql"
             state: "started"
           when: inventory_hostname != play_hosts[0]
+
+        - name: stop master node
+          shell: |
+            killall -15 mysqld
+            for i in $(seq 1 60); do
+              sleep 1
+              pgrep mysqld || break;
+            done
+          when: inventory_hostname == play_hosts[0]
+
+        - name: readd master node to the cluster
+          service:
+            name: "mysql"
+            state: "started"
+          when: inventory_hostname == play_hosts[0]
 
 To stop a running cluster:
 
