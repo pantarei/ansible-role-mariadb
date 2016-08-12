@@ -27,6 +27,12 @@
   with_items: "{{ _apt }}"
   tags: hswong3i.mariadb
 
+- name: start service
+  service:
+    name: "mysql"
+    state: "started"
+  tags: hswong3i.mariadb
+
 - name: disable mariadb anonymous access
   shell: |
     sudo -i mysql -NBe "DELETE FROM mysql.user WHERE User = ''"
@@ -52,6 +58,18 @@
   ignore_errors: yes
   tags: hswong3i.mariadb
 
+- name: copy templates
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { src: "etc/mysql/debian.cnf.j2", dest: "/etc/mysql/debian.cnf",  owner: "root", group: "root", mode: "0600" }
+  when: setup_debian_sys_maint_password_result.rc == 0
+  tags: hswong3i.mariadb
+
 - name: setup mariadb root password
   shell: |
     sudo -i mysql -NBe "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('{{ mysql_root_pass }}')"
@@ -69,11 +87,21 @@
     group: "{{ item.group }}"
     mode: "{{ item.mode }}"
   with_items:
+    - { src: "root/.my.cnf.j2", dest: "/root/.my.cnf",  owner: "root", group: "root", mode: "0600" }
+  when: etup_root_password_result.rc == 0
+  tags: hswong3i.mariadb
+
+- name: copy templates
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  with_items:
     - { src: "etc/mysql/conf.d/mariadb.cnf.j2", dest: "/etc/mysql/conf.d/mariadb.cnf",  owner: "root", group: "root", mode: "0644" }
     - { src: "etc/mysql/conf.d/mysqld_safe_syslog.cnf.j2", dest: "/etc/mysql/conf.d/mysqld_safe_syslog.cnf",  owner: "root", group: "root", mode: "0644" }
-    - { src: "etc/mysql/debian.cnf.j2", dest: "/etc/mysql/debian.cnf",  owner: "root", group: "root", mode: "0600" }
     - { src: "etc/mysql/my.cnf.j2", dest: "/etc/mysql/my.cnf",  owner: "root", group: "root", mode: "0644" }
-    - { src: "root/.my.cnf.j2", dest: "/root/.my.cnf",  owner: "root", group: "root", mode: "0600" }
   tags: hswong3i.mariadb
 
 - name: disable service start on boot
