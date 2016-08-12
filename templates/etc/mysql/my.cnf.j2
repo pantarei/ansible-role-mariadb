@@ -123,11 +123,7 @@ innodb_locks_unsafe_for_binlog = {{ mysql_innodb_locks_unsafe_for_binlog }}
 # Mandatory settings
 wsrep_on = ON
 wsrep_provider = /usr/lib/galera/libgalera_smm.so
-wsrep_cluster_address = "gcomm://
-{%- for host in play_hosts -%}
-{{ hostvars[host].ansible_default_ipv4.address }}
-{%- if not loop.last -%},{%- endif -%}
-{%- endfor -%}"
+wsrep_cluster_address = gcomm://{{ play_hosts | join(',') }}
 binlog_format = row
 default_storage_engine = InnoDB
 innodb_autoinc_lock_mode = {{ mysql_innodb_autoinc_lock_mode }}
