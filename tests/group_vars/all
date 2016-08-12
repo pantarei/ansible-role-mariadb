@@ -1,3 +1,4 @@
 ---
-mariadb_root_pass: "Aini2ouK"
-mariadb_root_user: "root"
+
+mysql_root_pass: "Aini2ouK"
+mysql_root_user: "root"
