@@ -88,7 +88,7 @@
     mode: "{{ item.mode }}"
   with_items:
     - { src: "root/.my.cnf.j2", dest: "/root/.my.cnf",  owner: "root", group: "root", mode: "0600" }
-  when: etup_root_password_result.rc == 0
+  when: setup_root_password_result.rc == 0
   tags: hswong3i.mariadb
 
 - name: copy templates
