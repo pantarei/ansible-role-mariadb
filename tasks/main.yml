@@ -39,7 +39,7 @@
   shell: |
     sudo -i mysql -NBe "DELETE FROM mysql.user WHERE User = ''"
   when: 
-    - not start_service_result.failed
+    - start_service_result.state == "started"
   register: disable_anonymous_access_result
   changed_when: disable_anonymous_access_result.rc != 0
   ignore_errors: yes
@@ -49,7 +49,7 @@
   shell: |
     sudo -i mysql -NBe "DELETE FROM mysql.user WHERE User = 'root' AND Host <> 'localhost'"
   when: 
-    - not start_service_result.failed
+    - start_service_result.state == "started"
   register: disable_root_access_remote_result
   changed_when: disable_root_access_remote_result.rc != 0
   ignore_errors: yes
@@ -59,7 +59,7 @@
   shell: |
     sudo -i mysql -NBe "SET PASSWORD FOR 'debian-sys-maint'@'localhost' = PASSWORD('{{ mysql_root_pass }}')"
   when:
-    - not start_service_result.failed
+    - start_service_result.state == "started"
     - mysql_root_pass is string
   register: setup_debian_sys_maint_password_result
   changed_when: setup_debian_sys_maint_password_result.rc != 0
@@ -76,7 +76,7 @@
   with_items:
     - { src: "etc/mysql/debian.cnf.j2", dest: "/etc/mysql/debian.cnf",  owner: "root", group: "root", mode: "0600" }
   when: 
-    - not start_service_result.failed
+    - start_service_result.state == "started"
     - mysql_root_pass is string
     - setup_debian_sys_maint_password_result.rc == 0
   tags: hswong3i.mariadb
@@ -85,7 +85,7 @@
   shell: |
     sudo -i mysql -NBe "SET PASSWORD FOR 'root'@'localhost' = PASSWORD('{{ mysql_root_pass }}')"
   when:
-    - not start_service_result.failed
+    - start_service_result.state == "started"
     - mysql_root_pass is string
   register: setup_root_password_result
   changed_when: setup_root_password_result.rc != 0
@@ -102,7 +102,7 @@
   with_items:
     - { src: "root/.my.cnf.j2", dest: "/root/.my.cnf",  owner: "root", group: "root", mode: "0600" }
   when:
-    - not start_service_result.failed
+    - start_service_result.state == "started"
     - mysql_root_pass is string
     - setup_root_password_result.rc == 0
   tags: hswong3i.mariadb
