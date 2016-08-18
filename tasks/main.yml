@@ -79,6 +79,7 @@
     - start_service_result.state == "started"
     - mysql_root_pass is string
     - setup_debian_sys_maint_password_result.rc == 0
+  ignore_errors: yes
   tags: hswong3i.mariadb
 
 - name: setup mysql root password
@@ -105,6 +106,7 @@
     - start_service_result.state == "started"
     - mysql_root_pass is string
     - setup_root_password_result.rc == 0
+  ignore_errors: yes
   tags: hswong3i.mariadb
 
 - name: copy templates
