@@ -29,8 +29,10 @@
 
 - name: start service
   service:
-    name: "mysql"
-    state: "started"
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+  with_items:
+    - { name: "mysql", state: "started" }
   register: start_service_result
   ignore_errors: yes
   tags: hswong3i.mariadb
@@ -124,6 +126,8 @@
 
 - name: disable service
   service:
-    name: "mysql"
-    enabled: "no"
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled }}"
+  with_items:
+    - { name: "mysql", enabled: "no" }
   tags: hswong3i.mariadb
