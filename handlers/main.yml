@@ -7,3 +7,4 @@
     state: "{{ item.state }}"
   with_items:
     - { name: "mysql", state: "restarted" }
+  when: play_hosts | length == 1

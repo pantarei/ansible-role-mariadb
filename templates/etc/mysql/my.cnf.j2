@@ -120,6 +120,7 @@ innodb_locks_unsafe_for_binlog = {{ mysql_innodb_locks_unsafe_for_binlog }}
 # * Galera-related settings
 #
 [galera]
+{% if play_hosts | length > 1 %}
 # Mandatory settings
 wsrep_on = ON
 wsrep_provider = /usr/lib/galera/libgalera_smm.so
@@ -135,6 +136,7 @@ bind-address = {{ mysql_bind_address }}
 # Optional setting
 #wsrep_slave_threads=1
 innodb_flush_log_at_trx_commit = {{ mysql_innodb_flush_log_at_trx_commit }}
+{% endif %}
 
 [mysqldump]
 quick
