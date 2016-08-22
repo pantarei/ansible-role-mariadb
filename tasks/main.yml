@@ -124,10 +124,10 @@
     - { src: "etc/mysql/my.cnf.j2", dest: "/etc/mysql/my.cnf",  owner: "root", group: "root", mode: "0644" }
   tags: hswong3i.mariadb
 
-- name: disable service
+- name: enable service
   service:
     name: "{{ item.name }}"
     enabled: "{{ item.enabled }}"
   with_items:
-    - { name: "mysql", enabled: "no" }
+    - { name: "mysql", enabled: "yes" }
   tags: hswong3i.mariadb
