@@ -4,10 +4,12 @@
 _apt_key: [
   { state: "present", keyserver: "keyserver.ubuntu.com", id: "0xF1656F24C74CD1D8" },
   { state: "present", keyserver: "keyserver.ubuntu.com", id: "CBCB082A1BB943DB" },
+  { state: "present", url: "https://www.percona.com/downloads/RPM-GPG-KEY-percona" },
 ]
 _apt_repository: [
   { state: "absent", repo: "ppa:ondrej/mysql-5.7" },
   { state: "present", repo: "deb [arch=amd64,i386,ppc64el] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu trusty main" },
+  { state: "present", repo: "deb http://repo.percona.com/apt trusty main" },
 ]
 _apt: [
   { state: "absent", name: "mariadb-client" },
@@ -40,5 +42,7 @@ _apt: [
   { state: "latest", name: "mariadb-client-core-10.1" },
   { state: "latest", name: "mariadb-server-10.1" },
   { state: "latest", name: "mariadb-server-core-10.1" },
+  { state: "latest", name: "percona-release" },
+  { state: "latest", name: "percona-xtrabackup" },
   { state: "latest", name: "python-mysqldb" },
 ]

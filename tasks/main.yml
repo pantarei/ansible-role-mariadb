@@ -7,8 +7,9 @@
 
 - name: apt-key add
   apt_key:
-    keyserver: "{{ item.keyserver }}"
-    id: "{{ item.id }}"
+    id: "{{ item.id | default(None) or omit }}"
+    keyserver: "{{ item.keyserver | default(None) or omit }}"
+    url: "{{ item.url | default(None) or omit }}"
     state: "{{ item.state }}"
   with_items: "{{ _apt_key }}"
   tags: hswong3i.mariadb
