@@ -121,21 +121,16 @@ innodb_locks_unsafe_for_binlog = {{ mysql_innodb_locks_unsafe_for_binlog }}
 #
 [galera]
 {% if play_hosts | length > 1 %}
-# Mandatory settings
-wsrep_on = ON
-wsrep_provider = /usr/lib/galera/libgalera_smm.so
-wsrep_cluster_address = gcomm://{{ play_hosts | join(',') }}
+bind-address = 0.0.0.0
 binlog_format = row
 default_storage_engine = InnoDB
 innodb_autoinc_lock_mode = {{ mysql_innodb_autoinc_lock_mode }}
-#
-# Allow server to accept connections on all interfaces.
-#
-bind-address = {{ mysql_bind_address }}
-#
-# Optional setting
-#wsrep_slave_threads=1
 innodb_flush_log_at_trx_commit = {{ mysql_innodb_flush_log_at_trx_commit }}
+wsrep_cluster_address = gcomm://{{ play_hosts | join(',') }}
+wsrep_on = 1
+wsrep_provider = /usr/lib/galera/libgalera_smm.so
+wsrep_sst_auth = root:{{ mysql_root_pass }}
+wsrep_sst_method = xtrabackup-v2
 {% endif %}
 
 [mysqldump]
