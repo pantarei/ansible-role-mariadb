@@ -1,2 +1,10 @@
 ---
 # handlers file for hswong3i.mariadb
+
+- name: restart mysql
+  service:
+    name: "{{ item.name }}"
+    state: "{{ item.state }}"
+  with_items:
+    - { name: "mysql", state: "restarted" }
+  when: play_hosts | length == 1
