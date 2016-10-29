@@ -2,6 +2,7 @@
 # vars file for hswong3i.mariadb (trusty)
 
 _apt_key: [
+  { state: "absent", keyserver: "keyserver.ubuntu.com", id: "CBCB082A1BB943DB" },
   { state: "present", keyserver: "keyserver.ubuntu.com", id: "0xF1656F24C74CD1D8" },
   { state: "present", keyserver: "keyserver.ubuntu.com", id: "9334A25F8507EFA5" },
   { state: "present", url: "https://www.percona.com/downloads/RPM-GPG-KEY-percona" },
