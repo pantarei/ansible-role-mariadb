@@ -2,9 +2,9 @@
 # vars file for hswong3i.mariadb (xenial)
 
 _apt_key: [
-  { state: "present", keyserver: "keyserver.ubuntu.com", id: "0xF1656F24C74CD1D8" },
-  { state: "present", keyserver: "keyserver.ubuntu.com", id: "9334A25F8507EFA5" },
-  { state: "present", keyserver: "keyserver.ubuntu.com", id: "CBCB082A1BB943DB" },
+  { state: "present", keyserver: "hkp://keyserver.ubuntu.com:80", id: "0xF1656F24C74CD1D8" },
+  { state: "present", keyserver: "hkp://keyserver.ubuntu.com:80", id: "9334A25F8507EFA5" },
+  { state: "present", keyserver: "hkp://keyserver.ubuntu.com:80", id: "CBCB082A1BB943DB" },
   { state: "present", url: "https://www.percona.com/downloads/RPM-GPG-KEY-percona" },
 ]
 _apt_repository: [
