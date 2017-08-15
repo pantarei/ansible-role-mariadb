@@ -10,7 +10,7 @@ _apt_key: [
 _apt_repository: [
   { state: "absent", repo: "ppa:ondrej/mysql-5.7" },
   { state: "absent", repo: "deb [arch=amd64,i386,ppc64el] http://ftp.osuosl.org/pub/mariadb/repo/10.1/ubuntu xenial main" },
-  { state: "present", repo: "http://downloads.mariadb.com/MariaDB/10.2/repo/ubuntu xenial main" }
+  { state: "present", repo: "http://downloads.mariadb.com/MariaDB/10.2/repo/ubuntu xenial main" },
   { state: "present", repo: "deb http://repo.percona.com/apt xenial main" },
 ]
 _apt: [
