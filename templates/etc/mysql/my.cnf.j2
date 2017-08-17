@@ -132,6 +132,7 @@ wsrep_on = 1
 wsrep_provider = /usr/lib/galera/libgalera_smm.so
 wsrep_sst_auth = root:{{ mysql_root_pass }}
 wsrep_sst_method = xtrabackup-v2
+wsrep_retry_autocommit = 3
 {% endif %}
 
 [mysqldump]
