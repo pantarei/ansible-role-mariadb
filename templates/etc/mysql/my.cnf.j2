@@ -43,6 +43,7 @@ tmpdir = {{ mysql_tmpdir }}
 lc-messages-dir = {{ mysql_lc_messages_dir }}
 ignore_db_dirs = {{ mysql_ignore_db_dirs }}
 skip-external-locking
+sql_mode = NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION
 #
 # Instead of skip-networking the default is now to listen only on
 # localhost which is more compatible and is not less secure.
